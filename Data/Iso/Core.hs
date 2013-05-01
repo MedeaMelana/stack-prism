@@ -15,7 +15,6 @@ module Data.Iso.Core (
 import Prelude hiding (id, (.), head)
 
 import Data.Monoid
-import Data.Semigroup
 
 import Control.Applicative hiding (many)
 import Control.Monad
@@ -37,9 +36,6 @@ instance Monoid (Iso a b) where
     Iso
       ((<|>) <$> f1 <*> f2)
       ((<|>) <$> g1 <*> g2)
-
-instance Semigroup (Iso a b) where
-  (<>) = mappend
 
 -- | Apply an isomorphism in one direction.
 convert :: Iso a b -> a -> Maybe b

@@ -24,8 +24,7 @@ Library
                     Data.Iso.Core,
                     Data.Iso.TH,
                     Data.Iso.Common,
-  Build-Depends:    base >= 3.0 && < 5,
-                    semigroups >= 0.5 && < 0.9,
+  Build-Depends:    base >= 3.0 && < 5
 
 Source-Repository head
   Type:         git

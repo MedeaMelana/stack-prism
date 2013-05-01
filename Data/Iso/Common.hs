@@ -31,10 +31,10 @@ module Data.Iso.Common (
 import Prelude hiding (id, (.), maybe, either)
 import Control.Category
 
+import Data.Monoid ((<>))
+
 import Data.Iso.Core
 import Data.Iso.TH
-
-import Data.Semigroup
 
 
 unit :: Iso t (() :- t)
