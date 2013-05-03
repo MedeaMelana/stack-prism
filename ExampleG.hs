@@ -12,10 +12,15 @@ import Data.Iso
 import GHC.Generics
 
 
-data Aap = Aap deriving Generic
+data Aap = Aap deriving (Generic, Show)
 
 aap :: Iso t (Aap :- t)
 aap = giso
+
+data Noot = Noot Int deriving (Generic, Show)
+
+noot :: Iso (Int :- t) (Noot :- t)
+noot = giso
 
 giso :: forall a t. (Generic a, MkIso (Rep a)) => Iso (IsoLhs (Rep a) t) (a :- t)
 giso = Iso f g
@@ -43,6 +48,11 @@ instance MkIso U1 where
   type IsoLhs U1 t = t
   mkR t         = U1 :- t
   mkL (U1 :- t) = t
+
+instance MkIso (K1 i a) where
+  type IsoLhs (K1 i a) t = a :- t
+  mkR (h :- t) = K1 h :- t
+  mkL (K1 h :- t) = h :- t
 
 instance MkIso f => MkIso (M1 i c f) where
   type IsoLhs (M1 i c f) t = IsoLhs f t
