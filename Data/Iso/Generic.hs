@@ -6,12 +6,35 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Data.Iso.Generic (mkIsoList, IsoList(..)) where
+module Data.Iso.Generic (mkIsoList, IsoList(..), IsoLhs) where
 
 import Data.Iso
 import GHC.Generics
 
 
+-- | Derive a list of partial isomorphisms, one for each constructor in the 'Generic' datatype @a@. The list is wrapped in the unary constructor @IsoList@. Within that constructor, the isomorphisms are separated by the right-associative binary infix constructor @:&@. Finally, the individual isomorphisms are wrapped in the unary constructor @I@. These constructors are all exported by this module, but no documentation is generated for them by Hackage.
+--
+-- As an example, here is how to define the isomorphisms @nil@ and @cons@ for @[a]@, which is an instance of @Generic@:
+--
+-- > nil  :: Iso              t  ([a] :- t)
+-- > cons :: Iso (a :- [a] :- t) ([a] :- t)
+-- > (nil, cons) = (nil', cons')
+-- >   where
+-- >     IsoList (I nil' :& I cons') = mkIsoList
+--
+-- Currently GHC requires the extra indirection through @nil'@ and @cons'@, possibly due to a bug. If this is fixed, the example above can be written in a more direct way:
+--
+-- > nil  :: Iso              t  ([a] :- t)
+-- > cons :: Iso (a :- [a] :- t) ([a] :- t)
+-- > IsoList (I nil :& I cons) = mkIsoList
+--
+-- If you are familiar with the generic representations from @Data.Generic@, you might be interested in the exact types of the various constructors in which the isomorphisms are wrapped:
+--
+-- > I       :: (forall t. Iso (IsoLhs f t) (a :- t)) -> IsoList (M1 C c f) a
+-- > (:&)    :: IsoList f a -> IsoList g a -> IsoList (f :+: g) a
+-- > IsoList :: IsoList f a -> IsoList (M1 D c f) a
+--
+-- The type constructor @IsoLhs@ that appears in the type of @I@ is an internal type family that builds the proper heterogenous list of types (using ':-') based on the constructor's fields.
 mkIsoList :: (Generic a, MkIsoList (Rep a)) => IsoList (Rep a) a
 mkIsoList = mkIsoList' to (Just . from)
 
@@ -25,6 +48,8 @@ instance MkIsoList f => MkIsoList (M1 D c f) where
   data IsoList (M1 D c f) a = IsoList (IsoList f a)
   mkIsoList' f' g' = IsoList (mkIsoList' (f' . M1) (fmap unM1 . g'))
 
+
+infixr :&
 
 instance (MkIsoList f, MkIsoList g) => MkIsoList (f :+: g) where
   data IsoList (f :+: g) a = IsoList f a :& IsoList g a
@@ -48,9 +73,9 @@ instance (MkIsoList f, MkIsoList g) => MkIsoList (f :+: g) where
 
 instance MkIso f => MkIsoList (M1 C c f) where
 
-  data IsoList (M1 C c f) a = Z (forall t. Iso (IsoLhs f t) (a :- t))
+  data IsoList (M1 C c f) a = I (forall t. Iso (IsoLhs f t) (a :- t))
 
-  mkIsoList' f' g' = Z (Iso (f f') (g g'))
+  mkIsoList' f' g' = I (Iso (f f') (g g'))
     where
       f :: forall a p t. (M1 C c f p -> a) -> IsoLhs f t -> Maybe (a :- t)
       f _f' lhs = Just (mapHead (_f' . M1) (mkR lhs))

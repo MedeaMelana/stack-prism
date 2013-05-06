@@ -31,6 +31,18 @@ coords :: Iso (Float :- Float :- t) (Coords :- t)
 (person, male, female, coords) =
     (person', male', female', coords')
   where
-    IsoList (Z person')            = mkIsoList
-    IsoList (Z male' :& Z female') = mkIsoList
-    IsoList (Z coords')            = mkIsoList
+    IsoList (I person')            = mkIsoList
+    IsoList (I male' :& I female') = mkIsoList
+    IsoList (I coords')            = mkIsoList
+
+
+false, true :: Iso t (Bool :- t)
+(false, true) = (false', true')
+  where
+    IsoList (I false' :& I true') = mkIsoList
+
+nil  :: Iso              t  ([a] :- t)
+cons :: Iso (a :- [a] :- t) ([a] :- t)
+(nil, cons) = (nil', cons')
+  where
+    IsoList (I nil' :& I cons') = mkIsoList
