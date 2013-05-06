@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoMonoPatBinds #-}
 
@@ -13,8 +12,6 @@ data Person = Person
   { name     :: String
   , gender   :: Gender
   , age      :: Int
-  -- , lat      :: Float
-  -- , lng      :: Float
   , location :: Coords
   } deriving (Eq, Show)
 
