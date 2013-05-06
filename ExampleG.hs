@@ -25,16 +25,26 @@ data Noot = Noot Int deriving (Generic, Show)
 noot :: Iso (Int :- t) (Noot :- t)
 noot = giso
 
-data Mies = Mies Int Char () deriving (Generic, Show)
-
---mies :: forall t. Iso (Int :- Char :- () :- t) (Mies :- t)
-IsoList (Z mies) = mkIsoList (Mies 0 'c' ())
-
-IsoList (Z false' :& Z true') = mkIsoList True
+data Mies = Mies Char Int deriving (Generic, Show)
 
 
-mkIsoList :: a -> (Generic a, MkIsoList (Rep a)) => IsoList (Rep a) a
-mkIsoList _ = mkIsoList' to (Just . from)
+mies :: Iso (Char :- Int :- t) (Mies :- t)
+mies = mies'
+  where IsoList (Z mies') = mkIsoList
+
+false :: Iso t (Bool :- t)
+true  :: Iso t (Bool :- t)
+(false, true) = (false', true')
+  where
+    IsoList (Z false' :& Z true') = mkIsoList
+
+testMies :: Maybe (Mies :- ())
+testMies = convert mies ('Q' :- 42 :- ())
+
+
+
+mkIsoList :: (Generic a, MkIsoList (Rep a)) => IsoList (Rep a) a
+mkIsoList = mkIsoList' to (Just . from)
 
 
 class MkIsoList (f :: * -> *) where
