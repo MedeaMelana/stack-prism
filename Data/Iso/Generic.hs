@@ -9,7 +9,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE NoMonoPatBinds #-}
 
-module ExampleG where
+module Data.Iso.Generic where
 
 import Data.Iso
 import GHC.Generics
