@@ -1,7 +1,11 @@
-default: run
+default:
+	# Use either "make th" or "make generic"
 
-run:
-	ghci -Wall Example
+th:
+	ghci -Wall ExampleTH
+
+generic:
+	ghci -Wall ExampleGeneric
 
 clean:
 	cabal clean

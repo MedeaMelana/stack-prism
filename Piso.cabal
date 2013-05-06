@@ -22,9 +22,11 @@ Build-type:     Simple
 Library
   Exposed-Modules:  Data.Iso,
                     Data.Iso.Core,
-                    Data.Iso.TH,
                     Data.Iso.Common,
-  Build-Depends:    base >= 3.0 && < 5
+                    Data.Iso.TH,
+                    Data.Iso.Generic
+  Build-Depends:    base >= 3.0 && < 5,
+                    template-haskell
 
 Source-Repository head
   Type:         git

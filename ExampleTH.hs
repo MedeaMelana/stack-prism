@@ -5,8 +5,6 @@ module Example where
 
 import Data.Iso
 
-import Prelude hiding (id, (.), head, either)
-
 
 data Person = Person
   { name     :: String

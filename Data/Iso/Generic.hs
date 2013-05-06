@@ -1,46 +1,15 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE ImpredicativeTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE NoMonoPatBinds #-}
+{-# LANGUAGE RankNTypes #-}
 
-module Data.Iso.Generic where
+module Data.Iso.Generic (mkIsoList, IsoList(..)) where
 
 import Data.Iso
 import GHC.Generics
-
-
-data Aap = Aap deriving (Generic, Show)
-
-aap :: Iso t (Aap :- t)
-aap = giso
-
-data Noot = Noot Int deriving (Generic, Show)
-
-noot :: Iso (Int :- t) (Noot :- t)
-noot = giso
-
-data Mies = Mies Char Int deriving (Generic, Show)
-
-
-mies :: Iso (Char :- Int :- t) (Mies :- t)
-mies = mies'
-  where IsoList (Z mies') = mkIsoList
-
-false :: Iso t (Bool :- t)
-true  :: Iso t (Bool :- t)
-(false, true) = (false', true')
-  where
-    IsoList (Z false' :& Z true') = mkIsoList
-
-testMies :: Maybe (Mies :- ())
-testMies = convert mies ('Q' :- 42 :- ())
-
 
 
 mkIsoList :: (Generic a, MkIsoList (Rep a)) => IsoList (Rep a) a
@@ -90,17 +59,6 @@ instance MkIso f => MkIsoList (M1 C c f) where
 
 
 -- Deriving types and conversions for single constructors
-
-giso :: forall a t. (Generic a, MkIso (Rep a)) => Iso (IsoLhs (Rep a) t) (a :- t)
-giso = Iso f g
-  where
-    f :: forall a t'. (Generic a, MkIso (Rep a)) =>
-          IsoLhs (Rep a) t' -> Maybe (a :- t')
-    f t = Just (mapHead to (mkR t))
-
-    g :: forall a t. (Generic a, MkIso (Rep a)) =>
-          (a :- t) -> Maybe (IsoLhs (Rep a) t)
-    g (x :- t) = Just (mkL (from x :- t))
 
 class MkIso (f :: * -> *) where
   type IsoLhs (f :: * -> *) (t :: *) :: *
