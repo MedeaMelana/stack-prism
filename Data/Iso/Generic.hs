@@ -12,7 +12,7 @@ import Data.Iso
 import GHC.Generics
 
 
--- | Derive a list of partial isomorphisms, one for each constructor in the 'Generic' datatype @a@. The list is wrapped in the unary constructor @IsoList@. Within that constructor, the isomorphisms are separated by the right-associative binary infix constructor @:&@. Finally, the individual isomorphisms are wrapped in the unary constructor @I@. These constructors are all exported by this module, but no documentation is generated for them by Hackage.
+-- | Derive a list of partial isomorphisms, one for each constructor in the 'Generic' datatype @a@. The list is wrapped in the unary constructor @IsoList@. Within that constructor, the isomorphisms are separated by the right-associative binary infix constructor @:&@. Finally, the individual isomorphisms are wrapped in the unary constructor @I@. These constructors are all exported by this module, but no documentation is generated for them by Haddock.
 --
 -- As an example, here is how to define the isomorphisms @nil@ and @cons@ for @[a]@, which is an instance of @Generic@:
 --
