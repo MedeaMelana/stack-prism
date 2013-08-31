@@ -77,8 +77,8 @@ instance MkIso f => MkIsoList (M1 C c f) where
 
   mkIsoList' f' g' = I (Iso (f f') (g g'))
     where
-      f :: forall a p t. (M1 C c f p -> a) -> IsoLhs f t -> Maybe (a :- t)
-      f _f' lhs = Just (mapHead (_f' . M1) (mkR lhs))
+      f :: forall a p t. (M1 C c f p -> a) -> IsoLhs f t -> a :- t
+      f _f' lhs = mapHead (_f' . M1) (mkR lhs)
       g :: forall a p t. (a -> Maybe (M1 C c f p)) -> (a :- t) -> Maybe (IsoLhs f t)
       g _g' (a :- t) = fmap (mkL . (:- t) . unM1) (_g' a)
 

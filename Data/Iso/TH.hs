@@ -55,13 +55,12 @@ deriveConstructor name tys = do
   fieldNames <- replicateM (length tys) (newName "a")
 
   -- Figure out the names of some constructors
-  ConE just  <- [| Just |]
   ConE cons  <- [| (:-) |]
 
   let pat = foldr (\f fs -> ConP cons [VarP f, fs]) (VarP t) fieldNames
   let applyCon = foldl (\f x -> f `AppE` VarE x) (ConE name) fieldNames
   -- applyCon <- [| undefined |]
-  let body = ConE just `AppE` (ConE cons `AppE` applyCon `AppE` VarE t)
+  let body = ConE cons `AppE` applyCon `AppE` VarE t
 
   return $ LamE [pat] body
 
