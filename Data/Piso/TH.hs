@@ -59,7 +59,6 @@ deriveConstructor name tys = do
 
   let pat = foldr (\f fs -> ConP cons [VarP f, fs]) (VarP t) fieldNames
   let applyCon = foldl (\f x -> f `AppE` VarE x) (ConE name) fieldNames
-  -- applyCon <- [| undefined |]
   let body = ConE cons `AppE` applyCon `AppE` VarE t
 
   return $ LamE [pat] body
