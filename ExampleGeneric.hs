@@ -3,8 +3,8 @@
 
 module Example where
 
-import Data.Iso
-import Data.Iso.Generic
+import Data.Piso
+import Data.Piso.Generic
 
 import GHC.Generics
 
@@ -23,26 +23,26 @@ data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show, Generic)
 
 
-person :: Iso (String :- Gender :- Int :- Coords :- t) (Person :- t)
-male   :: Iso t (Gender :- t)
-female :: Iso t (Gender :- t)
-coords :: Iso (Float :- Float :- t) (Coords :- t)
+person :: Piso (String :- Gender :- Int :- Coords :- t) (Person :- t)
+male   :: Piso t (Gender :- t)
+female :: Piso t (Gender :- t)
+coords :: Piso (Float :- Float :- t) (Coords :- t)
 
 (person, male, female, coords) =
     (person', male', female', coords')
   where
-    IsoList (I person')            = mkIsoList
-    IsoList (I male' :& I female') = mkIsoList
-    IsoList (I coords')            = mkIsoList
+    PisoList (I person')            = mkPisoList
+    PisoList (I male' :& I female') = mkPisoList
+    PisoList (I coords')            = mkPisoList
 
 
-false, true :: Iso t (Bool :- t)
+false, true :: Piso t (Bool :- t)
 (false, true) = (false', true')
   where
-    IsoList (I false' :& I true') = mkIsoList
+    PisoList (I false' :& I true') = mkPisoList
 
-nil  :: Iso              t  ([a] :- t)
-cons :: Iso (a :- [a] :- t) ([a] :- t)
+nil  :: Piso              t  ([a] :- t)
+cons :: Piso (a :- [a] :- t) ([a] :- t)
 (nil, cons) = (nil', cons')
   where
-    IsoList (I nil' :& I cons') = mkIsoList
+    PisoList (I nil' :& I cons') = mkPisoList
