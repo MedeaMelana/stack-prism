@@ -73,9 +73,9 @@ instance (MkIsoList f, MkIsoList g) => MkIsoList (f :+: g) where
 
 instance MkIso f => MkIsoList (M1 C c f) where
 
-  data IsoList (M1 C c f) a = I (forall t. Iso (IsoLhs f t) (a :- t))
+  data IsoList (M1 C c f) a = I (forall t cat. FromIso cat => cat (IsoLhs f t) (a :- t))
 
-  mkIsoList' f' g' = I (Iso (f f') (g g'))
+  mkIsoList' f' g' = I (fromIso (Iso (f f') (g g')))
     where
       f :: forall a p t. (M1 C c f p -> a) -> IsoLhs f t -> a :- t
       f _f' lhs = mapHead (_f' . M1) (mkR lhs)

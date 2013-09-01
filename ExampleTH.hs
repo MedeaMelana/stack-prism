@@ -4,6 +4,7 @@
 module Example where
 
 import Data.Iso
+import Data.Iso.TH
 
 
 data Person = Person

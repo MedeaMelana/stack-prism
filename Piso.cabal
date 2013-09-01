@@ -21,7 +21,6 @@ Build-type:     Simple
 
 Library
   Exposed-Modules:  Data.Iso,
-                    Data.Iso.Core,
                     Data.Iso.Common,
                     Data.Iso.TH,
                     Data.Iso.Generic

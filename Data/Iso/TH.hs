@@ -3,7 +3,7 @@
 
 module Data.Iso.TH (deriveIsos) where
 
-import Data.Iso.Core
+import Data.Iso
 import Language.Haskell.TH
 import Control.Applicative
 import Control.Monad
