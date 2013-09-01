@@ -26,7 +26,8 @@ Library
                     Data.Iso.TH,
                     Data.Iso.Generic
   Build-Depends:    base >= 3.0 && < 5,
-                    template-haskell
+                    template-haskell,
+                    semigroups >= 0.8 && < 0.9
 
 Source-Repository head
   Type:         git
