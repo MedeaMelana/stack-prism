@@ -22,7 +22,7 @@ import GHC.Generics
 -- >   where
 -- >     PisoList (I nil' :& I cons') = mkPisoList
 --
--- Currently GHC requires the extra indirection through @nil'@ and @cons'@, possibly due to a bug. If this is fixed, the example above can be written in a more direct way:
+-- GHC 7.6.3 requires the extra indirection through @nil'@ and @cons'@, due to bug 7268 (<http://ghc.haskell.org/trac/ghc/ticket/7268>). When it is fixed, the example above can be written in a more direct way:
 --
 -- > nil  :: Piso              t  ([a] :- t)
 -- > cons :: Piso (a :- [a] :- t) ([a] :- t)
