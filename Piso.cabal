@@ -25,8 +25,7 @@ Library
                     Data.Piso.TH,
                     Data.Piso.Generic
   Build-Depends:    base >= 3.0 && < 5,
-                    template-haskell,
-                    semigroups >= 0.8 && < 0.9
+                    template-haskell
 
 Source-Repository head
   Type:         git
