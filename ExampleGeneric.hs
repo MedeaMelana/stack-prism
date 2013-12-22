@@ -23,10 +23,10 @@ data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show, Generic)
 
 -- The types in the first type parameter match those of the corresponding constructor's fields.
-person :: Iso (String :- Gender :- Int :- Coords :- t) (Person :- t)
-male   :: Iso t (Gender :- t)
-female :: Iso t (Gender :- t)
-coords :: Iso (Float :- Float :- t) (Coords :- t)
+person :: Piso (String :- Gender :- Int :- Coords :- t) (Person :- t)
+male   :: Piso t (Gender :- t)
+female :: Piso t (Gender :- t)
+coords :: Piso (Float :- Float :- t) (Coords :- t)
 
 -- Derive all isomorphisms for the three datatypes above.
 -- The weird indirection is necessary in GHC 7.6 because of
