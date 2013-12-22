@@ -62,12 +62,12 @@ instance (MkPisoList f, MkPisoList g) => MkPisoList (f :+: g) where
 
       matchL :: (a -> Maybe ((f :+: g) q)) -> a -> Maybe (f q)
       matchL _g' a = case _g' a of
-        Just (L1 f) -> Just f
+        Just (L1 f'') -> Just f''
         _ -> Nothing
 
       matchR :: (a -> Maybe ((f :+: g) q)) -> a -> Maybe (g q)
       matchR _g' a = case _g' a of
-        Just (R1 g) -> Just g
+        Just (R1 g'') -> Just g''
         _ -> Nothing
 
 
