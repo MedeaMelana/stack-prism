@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Data.Iso.TH (deriveIsos) where
+module Data.Piso.TH (derivePisos) where
 
-import Data.Iso.Core
+import Data.Piso
 import Language.Haskell.TH
 import Control.Applicative
 import Control.Monad
@@ -15,37 +15,37 @@ import Control.Monad
 -- 
 -- For example:
 -- 
--- > nothing :: Iso t (Maybe a :- t)
--- > just    :: Iso (a :- t) (Maybe a :- t)
--- > (nothing, just) = $(deriveIsos ''Maybe)
+-- > nothing :: Piso t (Maybe a :- t)
+-- > just    :: Piso (a :- t) (Maybe a :- t)
+-- > (nothing, just) = $(derivePisos ''Maybe)
 -- 
 -- Deriving isomorphisms this way requires @-XNoMonoPatBinds@.
-deriveIsos :: Name -> Q Exp
-deriveIsos name = do
+derivePisos :: Name -> Q Exp
+derivePisos name = do
   info <- reify name
   routers <-
     case info of
       TyConI (DataD _ _ _ cons _)   ->
-        mapM (deriveIso (length cons /= 1)) cons
+        mapM (derivePiso (length cons /= 1)) cons
       TyConI (NewtypeD _ _ _ con _) ->
-        (:[]) <$> deriveIso False con
+        (:[]) <$> derivePiso False con
       _ ->
         fail $ show name ++ " is not a datatype."
   return (TupE routers)
 
 
-deriveIso :: Bool -> Con -> Q Exp
-deriveIso matchWildcard con =
+derivePiso :: Bool -> Con -> Q Exp
+derivePiso matchWildcard con =
   case con of
     NormalC name tys -> go name (map snd tys)
     RecC name tys -> go name (map (\(_,_,ty) -> ty) tys)
     _ -> fail $ "Unsupported constructor " ++ show (conName con)
   where
     go name tys = do
-      iso <- [| Iso |]
-      isoCon <- deriveConstructor name tys
-      isoDes <- deriveDestructor matchWildcard name tys
-      return $ iso `AppE` isoCon `AppE` isoDes
+      piso <- [| Piso |]
+      pisoCon <- deriveConstructor name tys
+      pisoDes <- deriveDestructor matchWildcard name tys
+      return $ piso `AppE` pisoCon `AppE` pisoDes
 
 
 deriveConstructor :: Name -> [Type] -> Q Exp
@@ -55,13 +55,11 @@ deriveConstructor name tys = do
   fieldNames <- replicateM (length tys) (newName "a")
 
   -- Figure out the names of some constructors
-  ConE just  <- [| Just |]
   ConE cons  <- [| (:-) |]
 
   let pat = foldr (\f fs -> ConP cons [VarP f, fs]) (VarP t) fieldNames
   let applyCon = foldl (\f x -> f `AppE` VarE x) (ConE name) fieldNames
-  -- applyCon <- [| undefined |]
-  let body = ConE just `AppE` (ConE cons `AppE` applyCon `AppE` VarE t)
+  let body = ConE cons `AppE` applyCon `AppE` VarE t
 
   return $ LamE [pat] body
 

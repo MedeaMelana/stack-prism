@@ -3,7 +3,8 @@
 
 module Example where
 
-import Data.Iso
+import Data.Piso
+import Data.Piso.TH
 
 
 data Person = Person
@@ -19,6 +20,6 @@ data Gender = Male | Female
 data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show)
 
-person         = $(deriveIsos ''Person)
-(male, female) = $(deriveIsos ''Gender)
-coords         = $(deriveIsos ''Coords)
+person         = $(derivePisos ''Person)
+(male, female) = $(derivePisos ''Gender)
+coords         = $(derivePisos ''Coords)

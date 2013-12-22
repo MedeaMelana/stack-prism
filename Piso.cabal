@@ -20,13 +20,13 @@ Build-type:     Simple
 
 
 Library
-  Exposed-Modules:  Data.Iso,
-                    Data.Iso.Core,
-                    Data.Iso.Common,
-                    Data.Iso.TH,
-                    Data.Iso.Generic
+  Exposed-Modules:  Data.Piso,
+                    Data.Piso.Common,
+                    Data.Piso.TH,
+                    Data.Piso.Generic
   Build-Depends:    base >= 3.0 && < 5,
-                    template-haskell
+                    template-haskell,
+                    semigroups >= 0.8 && < 0.9
 
 Source-Repository head
   Type:         git
