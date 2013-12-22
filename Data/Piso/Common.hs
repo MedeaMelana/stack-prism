@@ -35,27 +35,17 @@ import Data.Piso.TH
 
 
 unit :: Piso t (() :- t)
-unit = Piso f g
-  where
-    f       t  = () :- t
-    g (_ :- t) = Just t
+unit = $(derivePisos ''())
 
 tup :: Piso (a :- b :- t) ((a, b) :- t)
-tup = Piso f g
-  where
-    f (a :- b :- t) = (a, b) :- t
-    g ((a, b) :- t) = Just (a :- b :- t)
+tup = $(derivePisos ''(,))
 
 tup3 :: Piso (a :- b :- c :- t) ((a, b, c) :- t)
-tup3 = Piso f g
-  where
-    f (a :- b :- c :- t) = (a, b, c) :- t
-    g ((a, b, c) :- t) = Just (a :- b :- c :- t)
+tup3 = $(derivePisos ''(,,))
 
 nothing :: Piso t (Maybe a :- t)
 just    :: Piso (a :- t) (Maybe a :- t)
 (nothing, just) = $(derivePisos ''Maybe)
-
 
 nil :: Piso t ([a] :- t)
 nil = Piso f g
@@ -71,11 +61,9 @@ cons = Piso f g
     g ((x : xs) :- t) = Just (x :- xs :- t)
     g _               = Nothing
 
-
 left  :: Piso (a :- t) (Either a b :- t)
 right :: Piso (b :- t) (Either a b :- t)
 (left, right) = $(derivePisos ''Either)
-
 
 false :: Piso t (Bool :- t)
 true  :: Piso t (Bool :- t)
