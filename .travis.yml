@@ -1,0 +1,4 @@
+language: haskell
+
+install:
+  - $CABAL install --dependencies-only --enable-tests
