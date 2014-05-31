@@ -28,25 +28,14 @@ male   :: Piso t (Gender :- t)
 female :: Piso t (Gender :- t)
 coords :: Piso (Float :- Float :- t) (Coords :- t)
 
--- Derive all isomorphisms for the three datatypes above.
--- The weird indirection is necessary in GHC 7.6 because of
--- https://ghc.haskell.org/trac/ghc/ticket/7268
--- and should be fixed in GHC 7.8.
-(person, male, female, coords) =
-    (person', male', female', coords')
-  where
-    PisoList (I person')            = mkPisoList
-    PisoList (I male' :& I female') = mkPisoList
-    PisoList (I coords')            = mkPisoList
+PisoList (I person)           = mkPisoList :: Pisos Person
+PisoList (I male :& I female) = mkPisoList :: Pisos Gender
+PisoList (I coords)           = mkPisoList :: Pisos Coords
 
 
 false, true :: Piso t (Bool :- t)
-(false, true) = (false', true')
-  where
-    PisoList (I false' :& I true') = mkPisoList
+PisoList (I false :& I true) = mkPisoList :: Pisos Bool
 
 nil  :: Piso              t  ([a] :- t)
 cons :: Piso (a :- [a] :- t) ([a] :- t)
-(nil, cons) = (nil', cons')
-  where
-    PisoList (I nil' :& I cons') = mkPisoList
+PisoList (I nil :& I cons) = mkPisoList :: Pisos [a] 

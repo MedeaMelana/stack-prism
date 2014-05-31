@@ -25,6 +25,9 @@ Library
                     Data.Piso.TH,
                     Data.Piso.Generic
   Build-Depends:    base >= 3.0 && < 5,
+                    profunctors >= 4.0 && < 5,
+                    tagged,
+                    transformers,
                     template-haskell
 
 Source-Repository head

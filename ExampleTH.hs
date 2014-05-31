@@ -21,12 +21,8 @@ data Gender = Male | Female
 data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show)
 
-person :: Piso (String :- Gender :- Int :- Coords :- t) (Person :- t)
-person = $(derivePisos ''Person)
+$(derivePisos ''Person ["person"])
 
-male   :: Piso t (Gender :- t)
-female :: Piso t (Gender :- t)
-(male, female) = $(derivePisos ''Gender)
+$(derivePisos ''Gender ["male", "female"])
 
-coords :: Piso (Float :- Float :- t) (Coords :- t)
-coords = $(derivePisos ''Coords)
+$(derivePisos ''Coords ["coords"])

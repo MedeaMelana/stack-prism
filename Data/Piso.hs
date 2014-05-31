@@ -1,35 +1,36 @@
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DeriveFunctor #-}
 
 module Data.Piso (
 
   -- * Partial isomorphisms
-  Piso(..), forward, backward,
-  FromPiso(..),
+  Piso, piso, forward, backward, 
   (:-)(..)
 
   ) where
 
 
-import Prelude hiding (id, (.))
-
-import Control.Monad ((>=>))
-import Control.Category (Category(..))
-
+import Control.Applicative
+import Data.Profunctor (Choice(..))
+import Data.Profunctor.Unsafe
+import Data.Functor.Identity
+import Data.Monoid (First(..))
+import Data.Tagged
 
 -- | Bidirectional isomorphism that is partial in the backward direction.
 --
 -- This can be used to express constructor-deconstructor pairs. For example:
 --
 -- > nil :: Piso t ([a] :- t)
--- > nil = Piso f g
+-- > nil = piso f g
 -- >   where
 -- >     f        t  = [] :- t
 -- >     g ([] :- t) = Just t
 -- >     g _         = Nothing
 -- >
 -- > cons :: Piso (a :- [a] :- t) ([a] :- t)
--- > cons = Piso f g
+-- > cons = piso f g
 -- >   where
 -- >     f (x :- xs  :- t) = (x : xs) :- t
 -- >     g ((x : xs) :- t) = Just (x :- xs :- t)
@@ -44,28 +45,18 @@ import Control.Category (Category(..))
 --
 -- Modules @Data.Piso.Generic@ and @Data.Piso.TH@ offer generic ways of deriving @Piso@s for custom datatypes.
 
-data Piso a b = Piso (a -> b) (b -> Maybe a)
+type Piso a b = forall p f. (Choice p, Applicative f) => p a (f a) -> p b (f b)
 
-instance Category Piso where
-  id                          = Piso id Just
-  ~(Piso f1 g1) . ~(Piso f2 g2) = Piso (f1 . f2) (g1 >=> g2)
-
+piso :: (a -> b) -> (b -> Maybe a) -> Piso a b
+piso f g = dimap (\b -> maybe (Left b) Right (g b)) (either pure (fmap f)) . right'
 
 -- | Apply an isomorphism in forward direction.
 forward :: Piso a b -> a -> b
-forward (Piso f _) = f
+forward l = runIdentity #. unTagged #. l .# Tagged .# Identity
 
 -- | Apply an isomorphism in backward direction.
 backward :: Piso a b -> b -> Maybe a
-backward (Piso _ g) = g
-
-
--- | A type class that expresses that a category is able to embed 'Piso' values.
-class Category cat => FromPiso cat where
-  fromPiso :: Piso a b -> cat a b
-
-instance FromPiso Piso where
-  fromPiso = id
+backward l = getFirst #. getConst #. l (Const #. First #. Just)
 
 
 -- | Heterogenous stack with a head and a tail. Or: an infix way to write @(,)@.

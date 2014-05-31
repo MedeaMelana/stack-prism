@@ -6,7 +6,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Data.Piso.Generic (mkPisoList, PisoList(..), PisoLhs) where
+module Data.Piso.Generic (mkPisoList, Pisos, PisoList(..), PisoLhs) where
 
 import Data.Piso
 import GHC.Generics
@@ -35,9 +35,10 @@ import GHC.Generics
 -- > PisoList :: PisoList f a -> PisoList (M1 D c f) a
 --
 -- The type constructor @PisoLhs@ that appears in the type of @I@ is an internal type family that builds the proper heterogenous list of types (using ':-') based on the constructor's fields.
-mkPisoList :: (Generic a, MkPisoList (Rep a)) => PisoList (Rep a) a
+mkPisoList :: (Generic a, MkPisoList (Rep a)) => Pisos a
 mkPisoList = mkPisoList' to (Just . from)
 
+type Pisos a = PisoList (Rep a) a
 
 class MkPisoList (f :: * -> *) where
   data PisoList (f :: * -> *) (a :: *)
@@ -73,9 +74,9 @@ instance (MkPisoList f, MkPisoList g) => MkPisoList (f :+: g) where
 
 instance MkPiso f => MkPisoList (M1 C c f) where
 
-  data PisoList (M1 C c f) a = I (forall t cat. FromPiso cat => cat (PisoLhs f t) (a :- t))
+  data PisoList (M1 C c f) a = I (forall t. Piso (PisoLhs f t) (a :- t))
 
-  mkPisoList' f' g' = I (fromPiso (Piso (f f') (g g')))
+  mkPisoList' f' g' = I (piso (f f') (g g'))
     where
       f :: forall a p t. (M1 C c f p -> a) -> PisoLhs f t -> a :- t
       f _f' lhs = mapHead (_f' . M1) (mkR lhs)
