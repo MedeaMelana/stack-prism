@@ -3,8 +3,8 @@
 
 module Example where
 
-import Data.Piso
-import Data.Piso.Generic
+import Data.StackPrism
+import Data.StackPrism.Generic
 
 import GHC.Generics
 
@@ -23,19 +23,19 @@ data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show, Generic)
 
 -- The types in the first type parameter match those of the corresponding constructor's fields.
-person :: Piso (String :- Gender :- Int :- Coords :- t) (Person :- t)
-male   :: Piso t (Gender :- t)
-female :: Piso t (Gender :- t)
-coords :: Piso (Float :- Float :- t) (Coords :- t)
+person :: StackPrism (String :- Gender :- Int :- Coords :- t) (Person :- t)
+male   :: StackPrism t (Gender :- t)
+female :: StackPrism t (Gender :- t)
+coords :: StackPrism (Float :- Float :- t) (Coords :- t)
 
-PisoList (I person)           = mkPisoList :: Pisos Person
-PisoList (I male :& I female) = mkPisoList :: Pisos Gender
-PisoList (I coords)           = mkPisoList :: Pisos Coords
+StackPrismList (I person)           = mkStackPrismList :: StackPrisms Person
+StackPrismList (I male :& I female) = mkStackPrismList :: StackPrisms Gender
+StackPrismList (I coords)           = mkStackPrismList :: StackPrisms Coords
 
 
-false, true :: Piso t (Bool :- t)
-PisoList (I false :& I true) = mkPisoList :: Pisos Bool
+false, true :: StackPrism t (Bool :- t)
+StackPrismList (I false :& I true) = mkStackPrismList :: StackPrisms Bool
 
-nil  :: Piso              t  ([a] :- t)
-cons :: Piso (a :- [a] :- t) ([a] :- t)
-PisoList (I nil :& I cons) = mkPisoList :: Pisos [a] 
+nil  :: StackPrism              t  ([a] :- t)
+cons :: StackPrism (a :- [a] :- t) ([a] :- t)
+StackPrismList (I nil :& I cons) = mkStackPrismList :: StackPrisms [a] 

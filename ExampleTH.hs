@@ -2,8 +2,8 @@
 
 module Example where
 
-import Data.Piso
-import Data.Piso.TH
+import Data.StackPrism
+import Data.StackPrism.TH
 
 
 data Person = Person
@@ -19,6 +19,6 @@ data Gender = Male | Female
 data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show)
 
-derivePisos ''Person
-derivePisos ''Gender
-derivePisos ''Coords
+deriveStackPrisms ''Person
+deriveStackPrisms ''Gender
+deriveStackPrisms ''Coords

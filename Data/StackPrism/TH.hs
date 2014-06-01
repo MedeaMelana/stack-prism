@@ -1,55 +1,55 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Data.Piso.TH (derivePisos, derivePisosWith, derivePisosFor) where
+module Data.StackPrism.TH (deriveStackPrisms, deriveStackPrismsWith, deriveStackPrismsFor) where
 
-import Data.Piso
+import Data.StackPrism
 import Language.Haskell.TH
 import Control.Applicative
 import Control.Monad
 
--- | Derive partial isomorphisms for a given datatype.
+-- | Derive stack prisms for a given datatype.
 --
 -- For example:
 --
--- > derivePisos ''Maybe
+-- > deriveStackPrisms ''Maybe
 --
 -- will create
 --
--- > _Just :: Piso (a :- t) (Maybe a :- t)
--- > _Nothing :: Piso t (Nothing :- t)
+-- > _Just :: StackPrism (a :- t) (Maybe a :- t)
+-- > _Nothing :: StackPrism t (Nothing :- t)
 --
 -- together with their implementations
-derivePisos :: Name -> Q [Dec]
-derivePisos = derivePisosWith ('_':)
+deriveStackPrisms :: Name -> Q [Dec]
+deriveStackPrisms = deriveStackPrismsWith ('_':)
 
-derivePisosWith :: (String -> String) -> Name -> Q [Dec]
-derivePisosWith nameFun = derivePisosWith' (const nameFun)
+deriveStackPrismsWith :: (String -> String) -> Name -> Q [Dec]
+deriveStackPrismsWith nameFun = deriveStackPrismsWith' (const nameFun)
 
-derivePisosFor :: [String] -> Name -> Q [Dec]
-derivePisosFor names = derivePisosWith' (\i _ -> names !! i)
+deriveStackPrismsFor :: [String] -> Name -> Q [Dec]
+deriveStackPrismsFor names = deriveStackPrismsWith' (\i _ -> names !! i)
 
-derivePisosWith' :: (Int -> String -> String) -> Name -> Q [Dec]
-derivePisosWith' nameFun name = do
+deriveStackPrismsWith' :: (Int -> String -> String) -> Name -> Q [Dec]
+deriveStackPrismsWith' nameFun name = do
   info <- reify name
   routers <-
     case info of
       TyConI (DataD _ _ tyArgs cons _)   ->
-        mapM (derivePiso name tyArgs (length cons /= 1)) cons
+        mapM (deriveStackPrism name tyArgs (length cons /= 1)) cons
       TyConI (NewtypeD _ _ tyArgs con _) ->
-        (:[]) <$> derivePiso name tyArgs False con
+        (:[]) <$> deriveStackPrism name tyArgs False con
       _ ->
         fail $ show name ++ " is not a datatype."
   return $ concat 
     [ [ SigD nm typeF
       , ValD (VarP nm) (NormalB router) []
       ] 
-    | (i, (conName, typeF, router)) <- zip [0..] routers
-    , let nm = mkName (nameFun i (nameBase conName))
+    | (i, (conNm, typeF, router)) <- zip [0..] routers
+    , let nm = mkName (nameFun i (nameBase conNm))
     ]
 
-derivePiso :: Name -> [TyVarBndr] -> Bool -> Con -> Q (Name, Type, Exp)
-derivePiso resNm tyArgs matchWildcard con =
+deriveStackPrism :: Name -> [TyVarBndr] -> Bool -> Con -> Q (Name, Type, Exp)
+deriveStackPrism resNm tyArgs matchWildcard con =
   case con of
     NormalC name tys -> go name (map snd tys)
     RecC name tys -> go name (map (\(_,_,ty) -> ty) tys)
@@ -57,17 +57,17 @@ derivePiso resNm tyArgs matchWildcard con =
     _ -> fail $ "Unsupported constructor " ++ show (conName con)
   where
     go name tys = do
-      pisoE <- [| piso |]
-      pisoCon <- deriveConstructor name tys
-      pisoDes <- deriveDestructor matchWildcard name tys
+      stackPrismE <- [| stackPrism |]
+      stackPrismCon <- deriveConstructor name tys
+      stackPrismDes <- deriveDestructor matchWildcard name tys
       tNm <- newName "t"
       let t = VarT tNm
       let fromType = foldr (-:) t tys
-      let toType = foldl (\t (PlainTV ty) -> AppT t (VarT ty)) (ConT resNm) tyArgs -: t
+      let toType = foldl (\t' (PlainTV ty) -> AppT t' (VarT ty)) (ConT resNm) tyArgs -: t
       return 
         $ ( name
-          , ForallT (PlainTV tNm:tyArgs) [] $ ConT (mkName "Piso") `AppT` fromType `AppT` toType
-          , pisoE `AppE` pisoCon `AppE` pisoDes
+          , ForallT (PlainTV tNm:tyArgs) [] $ ConT (mkName "StackPrism") `AppT` fromType `AppT` toType
+          , stackPrismE `AppE` stackPrismCon `AppE` stackPrismDes
           )
 
 (-:) :: Type -> Type -> Type
