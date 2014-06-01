@@ -14,7 +14,7 @@ import GHC.Generics
 
 -- | Derive a list of stack prisms, one for each constructor in the 'Generic' datatype @a@. The list is wrapped in the unary constructor @PrismList@. Within that constructor, the prisms are separated by the right-associative binary infix constructor @:&@. Finally, the individual prisms are wrapped in the unary constructor @I@. These constructors are all exported by this module, but no documentation is generated for them by Hackage.
 --
--- As an example, here is how to define the isomorphisms @nil@ and @cons@ for @[a]@, which is an instance of @Generic@:
+-- As an example, here is how to define the prisms @nil@ and @cons@ for @[a]@, which is an instance of @Generic@:
 --
 -- > nil  :: StackPrism              t  ([a] :- t)
 -- > cons :: StackPrism (a :- [a] :- t) ([a] :- t)
