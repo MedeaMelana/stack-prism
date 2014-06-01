@@ -1,27 +1,36 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE ParallelListComp #-}
 
-module Data.Piso.TH (derivePisos) where
+module Data.Piso.TH (derivePisos, derivePisosWith, derivePisosFor) where
 
 import Data.Piso
 import Language.Haskell.TH
 import Control.Applicative
 import Control.Monad
 
--- | Derive partial isomorphisms for a given datatype. The resulting
--- expression is a tuple with one isomorphism element for each constructor in
--- the datatype.
--- 
+-- | Derive partial isomorphisms for a given datatype.
+--
 -- For example:
--- 
--- > nothing :: Piso t (Maybe a :- t)
--- > just    :: Piso (a :- t) (Maybe a :- t)
--- > (nothing, just) = $(derivePisos ''Maybe)
--- 
--- Deriving isomorphisms this way requires @-XNoMonoPatBinds@.
-derivePisos :: Name -> [String] -> Q [Dec]
-derivePisos name pisoNames = do
+--
+-- > derivePisos ''Maybe
+--
+-- will create
+--
+-- > _Just :: Piso (a :- t) (Maybe a :- t)
+-- > _Nothing :: Piso t (Nothing :- t)
+--
+-- together with their implementations
+derivePisos :: Name -> Q [Dec]
+derivePisos = derivePisosWith ('_':)
+
+derivePisosWith :: (String -> String) -> Name -> Q [Dec]
+derivePisosWith nameFun = derivePisosWith' (const nameFun)
+
+derivePisosFor :: [String] -> Name -> Q [Dec]
+derivePisosFor names = derivePisosWith' (\i _ -> names !! i)
+
+derivePisosWith' :: (Int -> String -> String) -> Name -> Q [Dec]
+derivePisosWith' nameFun name = do
   info <- reify name
   routers <-
     case info of
@@ -32,18 +41,19 @@ derivePisos name pisoNames = do
       _ ->
         fail $ show name ++ " is not a datatype."
   return $ concat 
-    [ [ SigD (mkName nm) typeF
-      , ValD (VarP (mkName nm)) (NormalB router) []
+    [ [ SigD nm typeF
+      , ValD (VarP nm) (NormalB router) []
       ] 
-    | nm <- pisoNames 
-    | (typeF, router) <- routers 
+    | (i, (conName, typeF, router)) <- zip [0..] routers
+    , let nm = mkName (nameFun i (nameBase conName))
     ]
 
-derivePiso :: Name -> [TyVarBndr] -> Bool -> Con -> Q (Type, Exp)
+derivePiso :: Name -> [TyVarBndr] -> Bool -> Con -> Q (Name, Type, Exp)
 derivePiso resNm tyArgs matchWildcard con =
   case con of
     NormalC name tys -> go name (map snd tys)
     RecC name tys -> go name (map (\(_,_,ty) -> ty) tys)
+    InfixC (_, tyl) name (_, tyr) -> go name [tyl, tyr]
     _ -> fail $ "Unsupported constructor " ++ show (conName con)
   where
     go name tys = do
@@ -55,7 +65,8 @@ derivePiso resNm tyArgs matchWildcard con =
       let fromType = foldr (-:) t tys
       let toType = foldl (\t (PlainTV ty) -> AppT t (VarT ty)) (ConT resNm) tyArgs -: t
       return 
-        $ ( ForallT (PlainTV tNm:tyArgs) [] $ ConT (mkName "Piso") `AppT` fromType `AppT` toType
+        $ ( name
+          , ForallT (PlainTV tNm:tyArgs) [] $ ConT (mkName "Piso") `AppT` fromType `AppT` toType
           , pisoE `AppE` pisoCon `AppE` pisoDes
           )
 
@@ -68,9 +79,7 @@ deriveConstructor name tys = do
   t          <- newName "t"
   fieldNames <- replicateM (length tys) (newName "a")
 
-  -- Figure out the names of some constructors
-  ConE cons  <- [| (:-) |]
-
+  let cons = mkName ":-"
   let pat = foldr (\f fs -> UInfixP (VarP f) cons fs) (VarP t) fieldNames
   let applyCon = foldl (\f x -> f `AppE` VarE x) (ConE name) fieldNames
   let body = UInfixE applyCon (ConE cons) (VarE t)

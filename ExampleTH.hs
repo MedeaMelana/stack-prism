@@ -1,6 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE NoMonoPatBinds #-}
 
 module Example where
 
@@ -21,8 +19,6 @@ data Gender = Male | Female
 data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show)
 
-$(derivePisos ''Person ["person"])
-
-$(derivePisos ''Gender ["male", "female"])
-
-$(derivePisos ''Coords ["coords"])
+derivePisos ''Person
+derivePisos ''Gender
+derivePisos ''Coords
