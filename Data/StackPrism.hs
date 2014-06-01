@@ -18,7 +18,8 @@ import Data.Functor.Identity
 import Data.Monoid (First(..))
 import Data.Tagged
 
--- | Bidirectional isomorphism that is partial in the backward direction.
+-- | A stack prism is a bidirectional isomorphism that is partial in the backward direction.
+-- These prisms are compatible with the @lens@ library.
 --
 -- This can be used to express constructor-deconstructor pairs. For example:
 --
@@ -41,20 +42,19 @@ import Data.Tagged
 -- remove @[]@ from the stack. Representing constructor-destructor pairs as
 -- stack manipulators allows them to be composed more easily.
 --
--- Module @Data.StackPrism.Common@ contains @StackPrism@s for some common datatypes.
---
--- Modules @Data.StackPrism.Generic@ and @Data.StackPrism.TH@ offer generic ways of deriving @StackPrism@s for custom datatypes.
+-- Modules "Data.StackPrism.Generic" and "Data.StackPrism.TH" offer generic ways of deriving @StackPrism@s for custom datatypes.
 
 type StackPrism a b = forall p f. (Choice p, Applicative f) => p a (f a) -> p b (f b)
 
+-- | Construct a prism.
 stackPrism :: (a -> b) -> (b -> Maybe a) -> StackPrism a b
 stackPrism f g = dimap (\b -> maybe (Left b) Right (g b)) (either pure (fmap f)) . right'
 
--- | Apply an isomorphism in forward direction.
+-- | Apply a prism in forward direction.
 forward :: StackPrism a b -> a -> b
 forward l = runIdentity #. unTagged #. l .# Tagged .# Identity
 
--- | Apply an isomorphism in backward direction.
+-- | Apply a prism in backward direction.
 backward :: StackPrism a b -> b -> Maybe a
 backward l = getFirst #. getConst #. l (Const #. First #. Just)
 

@@ -23,9 +23,11 @@ import Control.Monad
 deriveStackPrisms :: Name -> Q [Dec]
 deriveStackPrisms = deriveStackPrismsWith ('_':)
 
+-- | Derive stack prisms given a function that derives variable names from constructor names.
 deriveStackPrismsWith :: (String -> String) -> Name -> Q [Dec]
 deriveStackPrismsWith nameFun = deriveStackPrismsWith' (const nameFun)
 
+-- | Derive stack prisms given a list of variable names, one for each constructor.
 deriveStackPrismsFor :: [String] -> Name -> Q [Dec]
 deriveStackPrismsFor names = deriveStackPrismsWith' (\i _ -> names !! i)
 
