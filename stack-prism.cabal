@@ -18,6 +18,9 @@ License-file:   LICENSE
 Category:       Data
 Build-type:     Simple
 
+extra-source-files:
+  ExampleGeneric.hs
+  ExampleTH.hs
 
 Library
   Exposed-Modules:  Data.StackPrism,
@@ -25,9 +28,9 @@ Library
                     Data.StackPrism.Generic
   Build-Depends:    base >= 3.0 && < 5,
                     profunctors >= 4.0 && < 5,
-                    tagged,
-                    transformers,
-                    template-haskell
+                    tagged >= 0.4.4 && < 1,
+                    transformers >= 0.2 && < 0.5,
+                    template-haskell >= 2.8 && < 2.10
 
 Source-Repository head
   Type:         git

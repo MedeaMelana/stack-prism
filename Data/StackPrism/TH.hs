@@ -19,7 +19,7 @@ import Control.Monad
 -- > _Just :: StackPrism (a :- t) (Maybe a :- t)
 -- > _Nothing :: StackPrism t (Nothing :- t)
 --
--- together with their implementations
+-- together with their implementations.
 deriveStackPrisms :: Name -> Q [Dec]
 deriveStackPrisms = deriveStackPrismsWith ('_':)
 
