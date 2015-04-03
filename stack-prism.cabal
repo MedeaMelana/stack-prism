@@ -30,7 +30,7 @@ Library
                     profunctors >= 4.0 && < 5,
                     tagged >= 0.4.4 && < 1,
                     transformers >= 0.2 && < 0.5,
-                    template-haskell >= 2.8 && < 2.10
+                    template-haskell >= 2.8 && < 2.11
 
 Source-Repository head
   Type:         git
