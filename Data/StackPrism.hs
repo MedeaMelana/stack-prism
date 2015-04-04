@@ -21,7 +21,7 @@ import Data.Tagged
 -- | A stack prism is a bidirectional isomorphism that is partial in the backward direction.
 -- These prisms are compatible with the @lens@ library.
 --
--- This can be used to express constructor-deconstructor pairs. For example:
+-- Stack prisms can express constructor-deconstructor pairs. For example:
 --
 -- > nil :: StackPrism t ([a] :- t)
 -- > nil = stackPrism f g
@@ -39,11 +39,15 @@ import Data.Tagged
 --
 -- Here ':-' can be read as \'cons\', forming a stack of values. For example,
 -- @nil@ pushes @[]@ onto the stack; or, in the backward direction, tries to
--- remove @[]@ from the stack. Representing constructor-destructor pairs as
--- stack manipulators allows them to be composed more easily.
+-- remove @[]@ from the stack. @cons@ takes a head @x@ and tail @xs@ from the
+-- stack and pushes @x : xs@ onto the stack, or, in the backward direction,
+-- takes @x : xs@ from the stack and replaces it with its two individual
+-- components.
 --
--- Modules "Data.StackPrism.Generic" and "Data.StackPrism.TH" offer generic ways of deriving @StackPrism@s for custom datatypes.
-
+-- Every constructor has its own stack prism version. You don't have to write
+-- them by hand; you can automatically generate them, either using Template
+-- Haskell (see module @Data.StackPrism.TH@) or using GHC generic programming
+-- (see module @Data.StackPrism.Generic@).
 type StackPrism a b = forall p f. (Choice p, Applicative f) => p a (f a) -> p b (f b)
 
 -- | Construct a prism.
