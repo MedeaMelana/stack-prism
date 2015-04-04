@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/MedeaMelana/stack-prism.png?branch=master)](https://travis-ci.org/MedeaMelana/stack-prism)
+
 A Haskell library for expressing and deriving stack prisms.
 
 A stack prism is a bidirectional isomorphism that is partial in the backward
