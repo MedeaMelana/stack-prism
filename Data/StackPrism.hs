@@ -41,13 +41,13 @@ import Data.Tagged
 -- @nil@ pushes @[]@ onto the stack; or, in the backward direction, tries to
 -- remove @[]@ from the stack. @cons@ takes a head @x@ and tail @xs@ from the
 -- stack and pushes @x : xs@ onto the stack, or, in the backward direction,
--- takes @x : xs@ from the stack and replaces it with its two individual
--- components.
+-- tries to take @x : xs@ from the stack and replaces it with its two
+-- individual components.
 --
 -- Every constructor has its own stack prism version. You don't have to write
 -- them by hand; you can automatically generate them, either using Template
--- Haskell (see module @Data.StackPrism.TH@) or using GHC generic programming
--- (see module @Data.StackPrism.Generic@).
+-- Haskell (see module "Data.StackPrism.TH") or using GHC generic programming
+-- (see module "Data.StackPrism.Generic").
 type StackPrism a b = forall p f. (Choice p, Applicative f) => p a (f a) -> p b (f b)
 
 -- | Construct a prism.

@@ -5,7 +5,7 @@ module Data.StackPrism.TH (
     -- * Deriving stack prisms
     deriveStackPrisms, deriveStackPrismsWith, deriveStackPrismsFor,
 
-    -- * Re-exported types from @Data.StackPrism@
+    -- * Re-exported types from "Data.StackPrism"
     StackPrism, (:-)(..)
   ) where
 

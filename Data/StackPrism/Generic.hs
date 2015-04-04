@@ -10,7 +10,7 @@ module Data.StackPrism.Generic (
     -- * Deriving stack prisms
     mkPrismList, StackPrisms, PrismList(..),
 
-    -- * Re-exported types from @Data.StackPrism@
+    -- * Re-exported types from "Data.StackPrism"
     StackPrism, (:-)(..)
   ) where
 
