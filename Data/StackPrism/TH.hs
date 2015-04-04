@@ -11,6 +11,7 @@ module Data.StackPrism.TH (
 
 import Data.StackPrism
 import Language.Haskell.TH
+import Control.Applicative ((<$>))
 import Control.Monad
 
 -- | Derive stack prisms for a given datatype.
