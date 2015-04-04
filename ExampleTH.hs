@@ -2,7 +2,6 @@
 
 module Example where
 
-import Data.StackPrism
 import Data.StackPrism.TH
 
 

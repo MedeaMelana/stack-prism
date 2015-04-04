@@ -6,24 +6,40 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Data.StackPrism.Generic (StackPrisms, mkPrismList, PrismList(..), StackPrismLhs) where
+module Data.StackPrism.Generic (
+    -- * Deriving stack prisms
+    mkPrismList, StackPrisms, PrismList(..),
+
+    -- * Re-exported types from @Data.StackPrism@
+    StackPrism, (:-)(..)
+  ) where
 
 import Data.StackPrism
 import GHC.Generics
 
 
--- | Derive a list of stack prisms, one for each constructor in the 'Generic' datatype @a@. The list is wrapped in the unary constructor @PrismList@. Within that constructor, the prisms are separated by the right-associative binary infix constructor @:&@. Finally, the individual prisms are wrapped in the unary constructor @I@. These constructors are all exported by this module, but no documentation is generated for them by Hackage.
+-- | Derive a list of stack prisms. For more information on the shape of a
+-- 'PrismList', please see the documentation below.
+mkPrismList :: (Generic a, MkPrismList (Rep a)) => StackPrisms a
+mkPrismList = mkPrismList' to (Just . from)
+
+-- | Convenient shorthand for a 'PrismList' indexed by a type and its generic
+-- representation.
+type StackPrisms a = PrismList (Rep a) a
+
+-- | A data family that is indexed on the building blocks from representation
+-- types from @GHC.Generics@. It builds up to a list of prisms, one for each
+-- constructor in the generic representation. The list is wrapped in the unary
+-- constructor @PrismList@. Within that constructor, the prisms are separated by
+-- the right-associative binary infix constructor @:&@. Finally, the individual
+-- prisms are wrapped in the unary constructor @P@.
 --
--- As an example, here is how to define the prisms @nil@ and @cons@ for @[a]@, which is an instance of @Generic@:
+-- As an example, here is how to define the prisms @nil@ and @cons@ for @[a]@,
+-- which is an instance of @Generic@:
 --
 -- > nil  :: StackPrism              t  ([a] :- t)
 -- > cons :: StackPrism (a :- [a] :- t) ([a] :- t)
 -- > PrismList (P nil :& P cons) = mkPrismList :: StackPrisms [a]
-mkPrismList :: (Generic a, MkPrismList (Rep a)) => StackPrisms a
-mkPrismList = mkPrismList' to (Just . from)
-
-type StackPrisms a = PrismList (Rep a) a
-
 data family PrismList (f :: * -> *) (a :: *)
 
 class MkPrismList (f :: * -> *) where
