@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Example where
+module TestTH where
 
 import Data.StackPrism.TH
 
@@ -21,3 +21,6 @@ data Coords = Coords { lat :: Float, lng :: Float }
 deriveStackPrisms ''Person
 deriveStackPrisms ''Gender
 deriveStackPrisms ''Coords
+
+-- Regression test for https://github.com/MedeaMelana/stack-prism/issues/3
+deriveStackPrisms ''Maybe

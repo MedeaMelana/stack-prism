@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Example where
+module TestGeneric where
 
 import Data.StackPrism.Generic
 

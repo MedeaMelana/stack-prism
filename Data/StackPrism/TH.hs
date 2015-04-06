@@ -1,5 +1,6 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Data.StackPrism.TH (
     -- * Deriving stack prisms
@@ -71,10 +72,27 @@ deriveStackPrism resNm tyArgs matchWildcard con =
       tNm <- newName "t"
       let t = VarT tNm
       let fromType = foldr (-:) t tys
-      let toType = foldl (\t' (PlainTV ty) -> AppT t' (VarT ty)) (ConT resNm) tyArgs -: t
+      let tyArgName = \case
+            PlainTV tyName -> tyName
+            KindedTV tyName _ -> tyName
+
+      -- Avoid needing -XKindSignatures for deriving stack prisms for simple
+      -- types. It seems in recent versions of template-haskell, tyargs of kind
+      -- *, such as that of Maybe, are now KindedTVs instead of PlainTVs. If we
+      -- copy the KindedTVs straight into the output type signature, GHC
+      -- requires -XKindSignatures.
+      let simplifyTyArg = \case
+            KindedTV tyName StarT -> PlainTV tyName
+            ty                    -> ty
+
+      let toType = foldl
+                    (\t' ty -> AppT t' (VarT (tyArgName ty)))
+                    (ConT resNm) tyArgs -: t
+
       return 
         $ ( name
-          , ForallT (PlainTV tNm:tyArgs) [] $ ConT (mkName "StackPrism") `AppT` fromType `AppT` toType
+          , ForallT (PlainTV tNm : (map simplifyTyArg tyArgs)) [] $
+              ConT (mkName "StackPrism") `AppT` fromType `AppT` toType
           , stackPrismE `AppE` stackPrismCon `AppE` stackPrismDes
           )
 
