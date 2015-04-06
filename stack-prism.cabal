@@ -18,10 +18,6 @@ License-file:   LICENSE
 Category:       Data
 Build-type:     Simple
 
-extra-source-files:
-  ExampleGeneric.hs
-  ExampleTH.hs
-
 Source-Repository head
   Type:         git
   Location:     https://github.com/MedeaMelana/stack-prism
