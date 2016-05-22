@@ -41,4 +41,4 @@ Test-Suite tests
                     TestTH
   Build-Depends:    base >= 3.0 && < 5,
                     stack-prism,
-                    template-haskell >= 2.8 && < 2.11
+                    template-haskell >= 2.8 && < 2.12
