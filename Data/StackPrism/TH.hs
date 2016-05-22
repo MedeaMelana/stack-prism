@@ -43,9 +43,9 @@ deriveStackPrismsWith' nameFun name = do
   info <- reify name
   routers <-
     case info of
-      TyConI (DataD _ _ tyArgs cons _)   ->
+      TyConI (DataD _ _ tyArgs _ cons _)   ->
         mapM (deriveStackPrism name tyArgs (length cons /= 1)) cons
-      TyConI (NewtypeD _ _ tyArgs con _) ->
+      TyConI (NewtypeD _ _ tyArgs _ con _) ->
         (:[]) <$> deriveStackPrism name tyArgs False con
       _ ->
         fail $ show name ++ " is not a datatype."
