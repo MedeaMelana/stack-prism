@@ -86,8 +86,8 @@ deriveStackPrism resNm tyArgs matchWildcard con =
 
       -- Avoid needing -XKindSignatures for deriving stack prisms for simple
       -- types. It seems in recent versions of template-haskell, tyargs of kind
-      -- *, such as that of Maybe, are now KindedTVs instead of PlainTVs. If we
-      -- copy the KindedTVs straight into the output type signature, GHC
+      -- `*', such as that of Maybe, are now KindedTVs instead of PlainTVs. If 
+      -- we copy the KindedTVs straight into the output type signature, GHC
       -- requires -XKindSignatures.
       let simplifyTyArg = \case
             KindedTV tyName StarT -> PlainTV tyName
