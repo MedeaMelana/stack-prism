@@ -32,7 +32,7 @@ Library
                     profunctors >= 4.0 && < 5.3,
                     tagged >= 0.4.4 && < 1,
                     transformers >= 0.2 && < 0.6,
-                    template-haskell >= 2.9 && < 2.12
+                    template-haskell >= 2.9 && < 2.13
 
 Test-Suite tests
   Type:             exitcode-stdio-1.0
@@ -42,4 +42,4 @@ Test-Suite tests
                     TestTH
   Build-Depends:    base >= 3.0 && < 5,
                     stack-prism,
-                    template-haskell >= 2.9 && < 2.12
+                    template-haskell >= 2.9 && < 2.13
