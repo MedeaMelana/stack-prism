@@ -3,7 +3,9 @@
 
 module TestGeneric where
 
+{-
 import Data.StackPrism.Generic
+-}
 
 import GHC.Generics
 
@@ -21,6 +23,7 @@ data Gender = Male | Female
 data Coords = Coords { lat :: Float, lng :: Float }
   deriving (Eq, Show, Generic)
 
+{-
 -- The types in the first type parameter match those of the corresponding constructor's fields.
 person :: StackPrism (String :- Gender :- Int :- Coords :- t) (Person :- t)
 male   :: StackPrism t (Gender :- t)
@@ -37,4 +40,5 @@ PrismList (P false :& P true) = mkPrismList :: StackPrisms Bool
 
 nil  :: StackPrism              t  ([a] :- t)
 cons :: StackPrism (a :- [a] :- t) ([a] :- t)
-PrismList (P nil :& P cons) = mkPrismList :: StackPrisms [a] 
+PrismList (P nil :& P cons) = mkPrismList :: StackPrisms [a]
+-}
