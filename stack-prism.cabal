@@ -1,5 +1,5 @@
 Name:           stack-prism
-Version:        0.1.6
+Version:        0.1.7
 Synopsis:       Stack prisms
 Description:    Haskell lens prisms that use stack types
 
